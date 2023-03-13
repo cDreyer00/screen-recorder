@@ -31,7 +31,6 @@ async function record(outFileName, audioDeviceName) {
         ]
     }
 
-
     const { stdout, stderr } = await execFile(ffmpegStatic, ffmpegArgs, { shell: true })
 
     if (stderr) {

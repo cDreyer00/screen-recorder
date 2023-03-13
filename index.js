@@ -18,6 +18,7 @@ async function execute() {
         console.log(`${selectedDevice} was chosen`)
     }
 
+    // choose out file name and start recording
     const outFileName = prompt('output file name: ')
     record(outFileName, selectedDevice)
         .then(data => console.log(data))
