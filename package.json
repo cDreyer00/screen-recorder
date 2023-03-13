@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "pkg ./index.js --output my-project.exe",
+    "build": "pkg ./index.js --output screen-recorder.exe",
     "dev": "node ./index.js"
   },
   "keywords": [],
@@ -12,7 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "ffmpeg-static": "^5.1.0",
-    "fluent-ffmpeg": "^2.1.2"
+    "fluent-ffmpeg": "^2.1.2",
+    "prompt-sync": "^4.2.0"
   },
   "bin": {}
 }

@@ -1,47 +1,34 @@
-const ffmpegStatic = require('ffmpeg-static');
-const util = require('node:util');
-const execFile = util.promisify(require('node:child_process').execFile);
+const prompt = require('prompt-sync')({ sigint: true })
+const { record, audioDevices } = require("./ffmpegHandler")
 
-const videosPath = './videos'
+async function execute() {
+    // catch audio devices
+    const devices = await audioDevices();
+    console.log(`${devices.length} audio devices were found:`)
+    devices.map((item, index) => console.log(`  ${index} - ${item}`))
+    console.log(`  ${devices.length} - NONE`)
 
-async function record() {
-    const { stdout, stderr } = await execFile('ffmpeg', [
-        '-f', 'dshow',
-        '-i', 'audio="Microphone (G600)"',
-        '-f', 'dshow',
-        '-i', 'audio="Mixagem estéreo (Realtek High Definition Audio)"',
-        '-f', 'gdigrab',
-        '-video_size', '1920x1080',
-        '-i', 'desktop',
-        '-framerate', '30',
-        '-filter_complex', '"[0:a][1:a]amerge=inputs=2[a]"',
-        '-map', '2',
-        '-map', '"[a]"',
-        `${videosPath}/s-m-system.avi`
-    ], {
-        shell: true
-    })
+    // select one
+    const n = prompt('type a number to select your device: ')
+    const selectedDevice = devices[n];
 
-    if (stderr) {
-        throw stderr;
+    if (!selectedDevice) {
+        console.log(`audio device not selected, screen will be recorded without audio`)
+    } else {
+        console.log(`${selectedDevice} was chosen`)
     }
 
-    return stdout;
+    const outFileName = prompt('output file name: ')
+    record(outFileName, selectedDevice)
+        .then(data => console.log(data))
+        .catch(err => console.log("ERROR =>", err))
+
+    console.log("start recording")
+    console.log("press CTRL+C to stop")
 }
 
-function convert() {
-    ffmpeg('./videos/output.mkv')
-        .output('output.avi')
-        .run()
-}
+execute()
 
-// convert()
-
-record()
-    .then(data => console.log(data))
-    .catch(err => console.error("ERROR:", err.message))
-console.log("start recording")
-console.log("press CTRL+C to stop")
 // // capture screen accord to dimensions
 // 'ffmpeg -f gdigrab -video_size 1920x1080 -i desktop -framerate 30 test.avi'
 
